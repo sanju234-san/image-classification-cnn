@@ -1,0 +1,11 @@
+{
+  "epochs": 10,
+  "training_samples": 19968,
+  "validation_samples": 4992,
+  "classes": [
+    "cats",
+    "dogs"
+  ],
+  "final_accuracy": 0.9899339079856873,
+  "final_val_accuracy": 0.6576522588729858
+}
