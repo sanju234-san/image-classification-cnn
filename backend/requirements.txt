@@ -1,37 +1,12 @@
-# Core FastAPI and web framework
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-
-# CORS middleware (included with FastAPI but explicit for clarity)
-python-multipart==0.0.6
-
-# TensorFlow and ML dependencies
-tensorflow==2.15.0
-keras==2.15.0
-numpy==1.24.3
-pillow==10.0.1
-
-# MongoDB and database dependencies
-motor==3.3.2
-pymongo==4.6.0
-gridfs==0.0.1
-
-# Environment variables
-python-dotenv==1.0.0
-
-# System monitoring (optional)
-psutil==5.9.6
-
-# Async support
-asyncio==3.4.3
-nest-asyncio==1.5.8
-
-# Additional utilities
-python-json-logger==2.0.7
-
-# For image processing and data handling
-scipy==1.11.4
-matplotlib==3.8.2
-
-# For production deployment
-gunicorn==21.2.0
+# Minimal requirements for deployment
+fastapi
+uvicorn[standard]
+python-multipart
+tensorflow
+numpy
+pillow
+motor
+pymongo
+python-dotenv
+nest-asyncio
+gunicorn
