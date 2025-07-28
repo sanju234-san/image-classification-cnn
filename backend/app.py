@@ -11,6 +11,11 @@ import logging
 import asyncio
 from collections import deque
 import base64
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Optional system monitoring
 try:
@@ -33,7 +38,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # --- FastAPI setup ---
-app = FastAPI(title="CNN Image Classifier API with MongoDB Storage", version="2.0.0")
+app = FastAPI(title="CNN Image Classifier API with MongoDB Atlas Storage", version="2.0.0")
 
 # CORS middleware - Allow React frontend
 app.add_middleware(
@@ -54,12 +59,13 @@ MODEL_PATH = "models/model.h5"
 CLASS_NAMES = ["cat", "dog"]  # Adjust based on your CNN model classes
 model = None
 
-# --- MongoDB setup ---
-MONGODB_URL = "mongodb://localhost:27017"
-DATABASE_NAME = "image_classifier"
-COLLECTION_NAME = "predictions"
-IMAGES_COLLECTION = "uploaded_images"
-DATASET_COLLECTION = "dataset_images"
+# --- MongoDB Atlas setup ---
+MONGODB_URL = os.getenv("MONGODB_URL", "mongodb+srv://sanjeevnidhir05:@123sanjeevni@cluster0.csdc7wq.mongodb.net/?retryWrites=true&w=majority")
+DATABASE_NAME = os.getenv("DATABASE_NAME", "image_classify")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME", "dogs & cats")
+IMAGES_COLLECTION = os.getenv("IMAGES_COLLECTION", "uploaded_images")
+DATASET_COLLECTION = os.getenv("DATASET_COLLECTION", "dataset_images")
+
 mongodb_client = None
 db = None
 collection = None
@@ -106,7 +112,16 @@ async def connect_to_mongo():
         logger.info("MongoDB not available - running without database")
         return False
     try:
+        logger.info(f"🔄 Connecting to MongoDB Atlas...")
+        logger.info(f"📍 Database: {DATABASE_NAME}")
+        
+        # Create client with Atlas connection string
         mongodb_client = AsyncIOMotorClient(MONGODB_URL)
+        
+        # Test the connection
+        await mongodb_client.admin.command('ping')
+        logger.info("✅ MongoDB Atlas ping successful")
+        
         db = mongodb_client[DATABASE_NAME]
         collection = db[COLLECTION_NAME]
         images_collection = db[IMAGES_COLLECTION]
@@ -129,11 +144,16 @@ async def connect_to_mongo():
         # Get dataset image count
         performance_metrics["dataset_images_count"] = await dataset_collection.count_documents({})
         
-        logger.info("✅ MongoDB connected successfully with GridFS")
+        logger.info("✅ MongoDB Atlas connected successfully with GridFS")
         logger.info(f"📊 Dataset images in database: {performance_metrics['dataset_images_count']}")
+        logger.info(f"🏷️  Collections: {COLLECTION_NAME}, {IMAGES_COLLECTION}, {DATASET_COLLECTION}")
         return True
     except Exception as e:
-        logger.error(f"❌ MongoDB connection failed: {e}")
+        logger.error(f"❌ MongoDB Atlas connection failed: {e}")
+        logger.error("Please check:")
+        logger.error("  1. Your connection string and password")
+        logger.error("  2. Network access whitelist in Atlas")
+        logger.error("  3. Database user permissions")
         return False
 
 async def store_image_to_gridfs(image_data, filename, metadata, bucket_type="uploads"):
@@ -264,13 +284,13 @@ async def startup_event():
         logger.error(f"❌ Failed to load CNN model: {e}")
         raise HTTPException(status_code=500, detail="Failed to load CNN model")
     
-    # Try to connect to MongoDB
+    # Try to connect to MongoDB Atlas
     if MONGODB_AVAILABLE:
         mongodb_connected = await connect_to_mongo()
         if mongodb_connected:
-            logger.info("✅ MongoDB connected - predictions and images will be stored")
+            logger.info("✅ MongoDB Atlas connected - predictions and images will be stored")
         else:
-            logger.warning("⚠️  MongoDB not connected - predictions and images won't be stored")
+            logger.warning("⚠️  MongoDB Atlas not connected - predictions and images won't be stored")
     else:
         logger.info("ℹ️  MongoDB not available - install 'motor' for database features")
 
@@ -279,14 +299,14 @@ async def shutdown_event():
     global mongodb_client
     if mongodb_client:
         mongodb_client.close()
-        logger.info("MongoDB connection closed")
+        logger.info("MongoDB Atlas connection closed")
 
 # --- Endpoints ---
 @app.get("/")
 def home():
     uptime = datetime.now() - performance_metrics["start_time"]
     return {
-        "message": "Welcome to CNN Image Classifier API with MongoDB Storage",
+        "message": "Welcome to CNN Image Classifier API with MongoDB Atlas Storage",
         "status": "healthy",
         "uptime_seconds": uptime.total_seconds(),
         "model_loaded": model is not None,
@@ -302,7 +322,7 @@ def home():
         "database_info": {
             "available": MONGODB_AVAILABLE,
             "connected": collection is not None,
-            "url": MONGODB_URL if MONGODB_AVAILABLE else "N/A",
+            "type": "MongoDB Atlas",
             "database": DATABASE_NAME if MONGODB_AVAILABLE else "N/A"
         },
         "performance": {
@@ -342,7 +362,7 @@ async def predict(file: UploadFile = File(...)):
         predicted_class, confidence, raw_predictions = predict_with_cnn(img_array)
         inference_time = time.time() - inference_start
 
-        # Store image in GridFS (MongoDB)
+        # Store image in GridFS (MongoDB Atlas)
         image_id = None
         if MONGODB_AVAILABLE and fs_bucket is not None:
             try:
@@ -358,9 +378,9 @@ async def predict(file: UploadFile = File(...)):
                 }
                 
                 image_id = await store_image_to_gridfs(contents, file.filename, image_metadata, "uploads")
-                logger.info(f"💾 Image stored with ID: {image_id}")
+                logger.info(f"💾 Image stored in Atlas with ID: {image_id}")
             except Exception as e:
-                logger.warning(f"⚠️  Failed to store image: {e}")
+                logger.warning(f"⚠️  Failed to store image in Atlas: {e}")
 
         total_processing_time = time.time() - request_start_time
 
@@ -380,11 +400,11 @@ async def predict(file: UploadFile = File(...)):
             }
         }
 
-        # Store prediction metadata to MongoDB
+        # Store prediction metadata to MongoDB Atlas
         if MONGODB_AVAILABLE and collection is not None:
             try:
                 asyncio.create_task(store_prediction_to_mongodb(prediction_data, image_id))
-                logger.info("💾 Prediction metadata stored to MongoDB")
+                logger.info("💾 Prediction metadata stored to MongoDB Atlas")
             except Exception as e:
                 logger.warning(f"⚠️  Failed to store prediction metadata: {e}")
 
@@ -442,7 +462,7 @@ async def get_stored_images(limit: int = 10, skip: int = 0, source: str = "all")
 
 @app.get("/dataset/images/")
 async def get_dataset_images(class_name: str = None, limit: int = 10, skip: int = 0):
-    """Get dataset images stored in MongoDB"""
+    """Get dataset images stored in MongoDB Atlas"""
     if not MONGODB_AVAILABLE or dataset_collection is None:
         raise HTTPException(status_code=503, detail="Database not connected")
     
@@ -589,6 +609,7 @@ async def get_prediction_stats():
             "prediction_class_distribution": class_stats,
             "dataset_class_distribution": dataset_stats,
             "database_status": "connected",
+            "database_type": "MongoDB Atlas",
             "gridfs_status": "enabled" if fs_bucket else "disabled",
             "dataset_gridfs_status": "enabled" if dataset_fs_bucket else "disabled"
         }
@@ -603,6 +624,7 @@ async def health_check():
         "model_status": "loaded" if model is not None else "not_loaded",
         "model_classes": CLASS_NAMES,
         "database_status": "connected" if collection is not None else "disconnected",
+        "database_type": "MongoDB Atlas",
         "gridfs_status": "enabled" if fs_bucket is not None else "disabled",
         "dataset_gridfs_status": "enabled" if dataset_fs_bucket is not None else "disabled",
         "images_stored": performance_metrics["images_stored"],

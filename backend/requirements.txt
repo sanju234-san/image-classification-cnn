@@ -1,34 +1,37 @@
-# Core dependencies based on imports in your files
-
-# TensorFlow and ML (from train_model.py and app.py)
-tensorflow==2.13.1
-numpy==1.24.3
-
-# Image processing (PIL imports in both files)
-pillow==10.0.1
-
-# FastAPI and web server (from app.py)
+# Core FastAPI and web framework
 fastapi==0.104.1
-uvicorn==0.24.0
+uvicorn[standard]==0.24.0
+
+# CORS middleware (included with FastAPI but explicit for clarity)
 python-multipart==0.0.6
 
-# MongoDB async driver (motor imports in both files)
+# TensorFlow and ML dependencies
+tensorflow==2.15.0
+keras==2.15.0
+numpy==1.24.3
+pillow==10.0.1
+
+# MongoDB and database dependencies
 motor==3.3.2
 pymongo==4.6.0
+gridfs==0.0.1
 
-# Async support (nest_asyncio import in train_model.py)
-nest-asyncio==1.5.8
+# Environment variables
+python-dotenv==1.0.0
 
-# System monitoring (psutil import in app.py - optional)
+# System monitoring (optional)
 psutil==5.9.6
 
-# CORS middleware (included in fastapi but explicit for clarity)
-# fastapi already includes starlette
+# Async support
+asyncio==3.4.3
+nest-asyncio==1.5.8
 
-# Standard library imports that don't need installation:
-# - os, json, asyncio, io, time, datetime, logging, collections, base64
-# - These are part of Python standard library
+# Additional utilities
+python-json-logger==2.0.7
 
-# Optional dependencies your code checks for:
-# gridfs - included with pymongo
-# bson - included with pymongo
+# For image processing and data handling
+scipy==1.11.4
+matplotlib==3.8.2
+
+# For production deployment
+gunicorn==21.2.0
