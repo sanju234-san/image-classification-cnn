@@ -1,197 +1,138 @@
-# CNN Image Classifier API with MongoDB Storage
+# CNN Image Classifier API
 
-A complete machine learning solution for image classification using Convolutional Neural Networks (CNN) with FastAPI backend and MongoDB storage system.
+A full-stack image classification application using Convolutional Neural Networks (CNN) to classify images of cats and dogs. Built with FastAPI backend and React frontend, with MongoDB for data storage.
 
 ## 🚀 Features
 
-- **CNN Model Training**: Train custom image classification models using TensorFlow/Keras
-- **FastAPI REST API**: High-performance API for image predictions
-- **MongoDB Integration**: Store images, predictions, and training datasets
-- **GridFS Storage**: Efficient storage for large image files
-- **Real-time Metrics**: Performance monitoring and system metrics
-- **Async Operations**: Full async support for database operations
-- **CORS Support**: Ready for frontend integration
-- **Dataset Management**: Tools for dataset cleaning and management
+- **Real-time Image Classification**: Upload images and get instant predictions
+- **CNN Model**: Custom-trained TensorFlow/Keras model for cat vs dog classification
+- **MongoDB Integration**: Store predictions, images, and datasets using MongoDB with GridFS
+- **Performance Monitoring**: Track system metrics, inference times, and request statistics
+- **RESTful API**: Clean and documented API endpoints
+- **Modern UI**: React-based frontend with Tailwind CSS
+- **CORS Support**: Cross-origin resource sharing enabled for frontend integration
 
-## 📋 Requirements
+## 📋 Prerequisites
 
-- Python 3.11+ (recommended)
-- MongoDB (local or cloud instance)
-- TensorFlow 2.13+
-- At least 4GB RAM for model training
+- Python 3.11.7
+- Node.js (for frontend)
+- MongoDB (local installation or MongoDB Compass)
+- pip (Python package manager)
+- npm or yarn (Node package manager)
 
 ## 🛠️ Installation
 
 ### Backend Setup
 
-#### 1. Clone the Repository
-```bash
-git clone <your-repo-url>
-cd cnn-image-classifier
-```
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd <project-directory>
+   ```
 
-#### 2. Set Up Backend
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```
+2. **Create a virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-#### 3. Set Up MongoDB
-Make sure MongoDB is running on your system:
-```bash
-# Local MongoDB
-mongod
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-# Or use MongoDB Atlas (cloud)
-# Update MONGODB_URL in the code files
-```
+4. **Set up MongoDB**
+   - Install MongoDB locally or use MongoDB Compass
+   - Default connection: `mongodb://localhost:27017/`
+   - Database name: `image_classifier`
+
+5. **Configure environment variables**
+   - Copy `.env` file and update if needed
+   - Key settings:
+     - `MONGODB_CONNECTION_STRING`: MongoDB connection URL
+     - `MODEL_PATH`: Path to your trained model (default: `models/model.h5`)
+     - `APP_PORT`: API port (default: 8000)
+
+6. **Train the model** (if you don't have a pre-trained model)
+   ```bash
+   python train_model.py
+   ```
+   This will:
+   - Load training data from MongoDB
+   - Train a CNN model
+   - Save the model to `models/model.h5`
+   - Save class names and training statistics
 
 ### Frontend Setup
 
-#### 1. Navigate to Frontend Directory
+1. **Navigate to frontend directory**
+   ```bash
+   cd frontend  # Adjust path as needed
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure API endpoint**
+   - Update the API URL in your frontend code if needed
+   - Default: `http://localhost:8000`
+
+## 🚀 Running the Application
+
+### Start Backend Server
+
 ```bash
-cd frontend
-```
-
-#### 2. Install Node.js Dependencies
-```bash
-npm install
-# or
-yarn install
-```
-
-#### 3. Configure API Endpoint
-Update the API base URL in your frontend configuration to point to your backend:
-```javascript
-// In your frontend config file
-const API_BASE_URL = "http://localhost:8000";  // Backend URL
-```
-
-## 📁 Project Structure
-
-```
-├── backend/              # Backend API files
-│   ├── app.py           # FastAPI application
-│   ├── train_model.py   # CNN model training script
-│   ├── clean_dataset.py # Dataset cleaning utility
-│   ├── requirements.txt # Python dependencies
-│   ├── runtime.txt      # Python version for deployment
-│   └── models/          # Trained models directory
-│       ├── model.h5     # Trained CNN model
-│       ├── class_names.json # Class labels
-│       └── training_stats.json # Training statistics
-├── frontend/             # React frontend application
-│   ├── dist/            # Built frontend files
-│   ├── node_modules/    # Node.js dependencies
-│   ├── public/          # Static assets
-│   ├── src/             # React source code
-│   │   ├── components/  # React components
-│   │   ├── pages/       # Page components
-│   │   ├── utils/       # Utility functions
-│   │   ├── App.jsx      # Main App component
-│   │   └── main.jsx     # Entry point
-│   ├── package.json     # Node.js dependencies
-│   ├── package-lock.json # Dependency lock file
-│   ├── vite.config.js   # Vite configuration
-│   ├── eslint.config.js # ESLint configuration
-│   └── index.html       # HTML template
-├── dataset/              # Training dataset
-│   ├── cats/            # Cat images
-│   ├── dogs/            # Dog images
-│   └── ...              # Other classes
-├── README.md            # This file
-└── .gitignore           # Git ignore rules
-```
-
-## 🎯 Usage
-
-### 1. Prepare Your Dataset
-
-Organize your images in the following structure:
-```
-dataset/
-├── cats/
-│   ├── cat1.jpg
-│   ├── cat2.jpg
-│   └── ...
-└── dogs/
-    ├── dog1.jpg
-    ├── dog2.jpg
-    └── ...
-```
-
-### 2. Clean Dataset (Optional)
-Remove corrupted images:
-```bash
-python clean_dataset.py
-```
-
-### 3. Train the Model
-```bash
-cd backend
-python train_model.py
-```
-
-This will:
-- Connect to MongoDB
-- Load images from the database
-- Train a CNN model
-- Save the trained model to `models/model.h5`
-- Save class names and training statistics
-
-### 4. Start the Backend API Server
-```bash
-cd backend
+# Make sure you're in the backend directory and venv is activated
 python app.py
-# Or using uvicorn directly:
+```
+
+Or using uvicorn directly:
+```bash
 uvicorn app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-The API will be available at `http://localhost:8000`
+The API will be available at: `http://localhost:8000`
 
-### 5. Start the Frontend Development Server
+### Start Frontend Development Server
+
 ```bash
-cd frontend
+# In the frontend directory
 npm run dev
-# or
-yarn dev
 ```
 
-The frontend will be available at `http://localhost:5173` (Vite default) or `http://localhost:3000`
+The frontend will be available at: `http://localhost:5173` (or the port shown in terminal)
 
-### 6. Access the Application
-- **Frontend**: `http://localhost:5173`
-- **Backend API**: `http://localhost:8000`
-- **API Documentation**: `http://localhost:8000/docs`
+## 📚 API Documentation
 
-## 📖 API Documentation
-
-### Base URL
-```
-http://localhost:8000
-```
-
-### Interactive Documentation
-- Swagger UI: `http://localhost:8000/docs`
-- ReDoc: `http://localhost:8000/redoc`
+Once the backend is running, visit:
+- **Swagger UI**: `http://localhost:8000/docs`
+- **ReDoc**: `http://localhost:8000/redoc`
 
 ### Main Endpoints
 
-#### 🏠 Health Check
-```http
-GET /
-GET /health/
+#### `GET /`
+Returns API status and configuration
+
+**Response:**
+```json
+{
+  "message": "Welcome to CNN Image Classifier API",
+  "status": "healthy",
+  "model_loaded": true,
+  "database_info": {...},
+  "performance": {...}
+}
 ```
 
-#### 🔮 Image Prediction
-```http
-POST /predict/
-Content-Type: multipart/form-data
+#### `POST /predict/`
+Upload an image for classification
 
-Body: file (image file - PNG, JPG, JPEG)
-```
+**Request:**
+- Method: POST
+- Content-Type: multipart/form-data
+- Body: Form data with `file` field (image file)
 
 **Response:**
 ```json
@@ -199,372 +140,162 @@ Body: file (image file - PNG, JPG, JPEG)
   "status": "success",
   "prediction": {
     "class": "cat",
-    "confidence": 0.95,
-    "processing_time": 0.123,
-    "inference_time": 0.045,
-    "file_size": 1024,
-    "filename": "image.jpg",
-    "image_id": "64f1a2b3c4d5e6f7g8h9i0j1",
-    "raw_predictions": [0.95, 0.05],
-    "model_info": {
-      "input_shape": "(None, 150, 150, 3)",
-      "classes": ["cat", "dog"],
-      "model_path": "models/model.h5"
-    }
-  }
-}
-```
-
-#### 📊 Performance Metrics
-```http
-GET /metrics/
-```
-
-#### 🖼️ Stored Images
-```http
-GET /images/
-GET /images/{image_id}
-```
-
-#### 📈 Prediction Statistics
-```http
-GET /predictions/stats/
-```
-
-#### 🧪 Model Testing
-```http
-POST /test-model/
-```
-
-## ⚙️ Configuration
-
-### Backend Configuration
-
-#### MongoDB Settings
-Update these variables in your code files:
-
-```python
-# MongoDB Configuration
-MONGODB_URL = "mongodb://localhost:27017"
-DATABASE_NAME = "image_classifier"
-COLLECTION_NAME = "dataset_images"
-BUCKET_NAME = "dataset_images"
-```
-
-#### Model Settings
-```python
-# Model Configuration
-IMG_SIZE = (150, 150)
-BATCH_SIZE = 32
-EPOCHS = 10
-CLASS_NAMES = ["cat", "dog"]  # Update based on your classes
-```
-
-#### CORS Settings
-```python
-# Allowed origins for frontend
-allow_origins=[
-    "http://localhost:5173",  # Vite
-    "http://localhost:3000",  # React
-    "http://127.0.0.1:5173",
-    "http://127.0.0.1:3000",
-    "https://your-frontend-domain.com"  # Production frontend
-]
-```
-
-### Frontend Configuration
-
-#### Environment Variables
-Create `.env` file in the frontend directory:
-```bash
-# Frontend environment variables
-VITE_API_BASE_URL=http://localhost:8000
-VITE_APP_TITLE=CNN Image Classifier
-VITE_MAX_FILE_SIZE=5242880  # 5MB in bytes
-VITE_ALLOWED_FILE_TYPES=image/jpeg,image/jpg,image/png
-```
-
-#### Vite Configuration
-Update `vite.config.js`:
-```javascript
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    port: 5173,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
-      }
-    }
+    "confidence": 0.98,
+    "processing_time": 0.15,
+    "inference_time": 0.08,
+    "image_id": "..."
   },
-  build: {
-    outDir: 'dist',
-    sourcemap: true
-  }
-})
-```
-
-#### Package.json Scripts
-Ensure your `package.json` has these scripts:
-```json
-{
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
-  }
+  "database_stored": true
 }
 ```
 
-## 🚀 Deployment
+## 📁 Project Structure
 
-### Frontend Deployment (Netlify/Vercel)
+```
+.
+├── app.py                  # Main FastAPI application
+├── train_model.py          # Model training script
+├── clean_dataset.py        # Dataset cleaning utility
+├── requirements.txt        # Python dependencies
+├── runtime.txt            # Python version specification
+├── .env                   # Environment configuration
+├── models/
+│   └── model.h5           # Trained CNN model
+├── frontend/
+│   ├── src/
+│   │   ├── App.jsx        # Main React component
+│   │   ├── Pages/
+│   │   │   └── Home.jsx   # Home page component
+│   │   └── components/
+│   │       └── Navbar.jsx # Navigation component
+│   ├── index.css          # Tailwind CSS imports
+│   └── package.json       # Frontend dependencies
+└── README.md              # This file
+```
 
-#### Build the Frontend
+## 🎯 Model Architecture
+
+The CNN model consists of:
+- **Conv2D Layer**: 32 filters, 3x3 kernel, ReLU activation
+- **MaxPooling2D**: 2x2 pool size
+- **Conv2D Layer**: 64 filters, 3x3 kernel, ReLU activation
+- **MaxPooling2D**: 2x2 pool size
+- **Flatten Layer**
+- **Dense Layer**: 128 neurons, ReLU activation
+- **Output Layer**: Softmax activation (2 classes: cat, dog)
+
+**Input Shape**: 150x150x3 (RGB images)
+
+## 🗄️ Database Collections
+
+The application uses the following MongoDB collections:
+
+- **predictions**: Stores prediction results with metadata
+- **uploaded_images**: Metadata for user-uploaded images
+- **cats**: Dataset images for cat class
+- **dogs**: Dataset images for dog class
+
+**GridFS Buckets**:
+- `images`: Stores user-uploaded images
+- `dataset_images`: Stores training dataset images
+
+## 🔧 Configuration
+
+Key configuration options in `.env`:
+
+```env
+# Application
+APP_PORT=8000
+APP_DEBUG=False
+
+# MongoDB
+MONGODB_CONNECTION_STRING="mongodb://localhost:27017/"
+MONGODB_DATABASE="image_classifier"
+
+# Model
+MODEL_PATH="models/model.h5"
+MODEL_CLASSES="cat,dog"
+MODEL_INPUT_HEIGHT=150
+MODEL_INPUT_WIDTH=150
+
+# File Upload
+MAX_FILE_SIZE=10485760  # 10MB
+ALLOWED_EXTENSIONS="png,jpg,jpeg,webp"
+```
+
+## 📊 Performance Monitoring
+
+The API tracks various metrics:
+- Request processing times
+- Model inference times
+- Database write times
+- Image storage times
+- System resource usage (CPU, memory, disk)
+
+Access metrics at the root endpoint (`/`)
+
+## 🧹 Dataset Cleaning
+
+Before training, clean your dataset:
+
 ```bash
-cd frontend
-npm run build
-# or
-yarn build
+python clean_dataset.py
 ```
 
-#### Deploy to Netlify
-1. Connect your GitHub repository to Netlify
-2. Set build command: `npm run build`
-3. Set publish directory: `dist`
-4. Add environment variable: `VITE_API_URL=your-backend-url`
+This removes corrupted images that can't be opened by PIL.
 
-#### Deploy to Vercel
-1. Connect your GitHub repository to Vercel
-2. Framework preset: Vite
-3. Build command: `npm run build`
-4. Output directory: `dist`
-5. Add environment variable: `VITE_API_URL=your-backend-url`
+## 🐛 Troubleshooting
 
-### Backend Deployment (Render.com)
+### Model Not Loading
+- Ensure `models/model.h5` exists
+- Check file permissions
+- Verify TensorFlow/Keras compatibility
 
-#### 1. Create Required Files
-Create `runtime.txt` in the backend directory:
-```
-python-3.11.7
-```
+### MongoDB Connection Failed
+- Verify MongoDB is running: `mongod --version`
+- Check connection string in `.env`
+- Ensure correct database permissions
 
-#### 2. Update CORS Settings
-Make sure your `app.py` includes your frontend URL in CORS origins:
-```python
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "https://your-frontend-domain.netlify.app",  # Add your frontend URL
-        "https://your-frontend-domain.vercel.app",   # Or Vercel URL
-        "http://localhost:5173",  # Keep for local development
-        "http://localhost:3000"
-    ],
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS", "DELETE"],
-    allow_headers=["*"],
-)
-```
+### CORS Errors
+- Frontend origin is included in CORS settings
+- Check `allow_origins` in `app.py`
 
-#### 3. Deploy to Render
-1. Connect your GitHub repository to Render
-2. Create a new Web Service
-3. Set root directory: `backend`
-4. Build command: `pip install -r requirements.txt`
-5. Start command: `uvicorn app:app --host 0.0.0.0 --port $PORT`
-6. Add environment variables:
-   ```
-   MONGODB_URL=your_mongodb_connection_string
-   ```
+### Image Upload Fails
+- Check file size (max 10MB by default)
+- Verify file format (PNG, JPG, JPEG, WEBP)
+- Ensure image is valid (not corrupted)
 
-### Full Stack Deployment with Docker
+## 📝 Development
 
-#### Frontend Dockerfile
-```dockerfile
-# frontend/Dockerfile
-FROM node:18-alpine
+### Adding New Classes
 
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
+1. Update `CLASS_NAMES` in `app.py`
+2. Update `MODEL_CLASSES` in `.env`
+3. Retrain model with new dataset
+4. Update frontend UI to handle new classes
 
-COPY . .
-RUN npm run build
+### Training with Custom Dataset
 
-FROM nginx:alpine
-COPY --from=0 /app/dist /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
-```
-
-#### Backend Dockerfile
-```dockerfile
-# backend/Dockerfile
-FROM python:3.11-slim
-
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY . .
-EXPOSE 8000
-
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-
-#### Docker Compose
-```yaml
-# docker-compose.yml
-version: '3.8'
-services:
-  backend:
-    build: ./backend
-    ports:
-      - "8000:8000"
-    environment:
-      - MONGODB_URL=mongodb://mongo:27017
-    depends_on:
-      - mongo
-
-  frontend:
-    build: ./frontend
-    ports:
-      - "3000:80"
-    depends_on:
-      - backend
-
-  mongo:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-
-volumes:
-  mongo_data:
-```
-
-## 🧪 Testing
-
-### Backend Testing
-
-#### Test Model Loading
-```bash
-curl -X POST "http://localhost:8000/test-model/"
-```
-
-#### Test Image Prediction
-```bash
-curl -X POST "http://localhost:8000/predict/" \
-  -H "accept: application/json" \
-  -H "Content-Type: multipart/form-data" \
-  -F "file=@test_image.jpg"
-```
-
-### Frontend Testing
-
-#### Run Frontend Tests
-```bash
-cd frontend
-npm test
-# or
-yarn test
-```
-
-#### Frontend Development Commands
-```bash
-# Start development server
-npm run dev
-
-# Build for production  
-npm run build
-
-# Preview production build
-npm run preview
-
-# Lint code
-npm run lint
-```
-
-### Full Stack Testing
-
-#### Test Complete Flow
-1. Start backend: `cd backend && python app.py`
-2. Start frontend: `cd frontend && npm run dev`
-3. Open browser: `http://localhost:5173`
-4. Upload an image and verify prediction results
-
-## 📊 Monitoring
-
-The system provides comprehensive monitoring:
-
-- **Request metrics**: Response times, success rates
-- **Model performance**: Inference times, prediction accuracy
-- **Database metrics**: Write times, storage usage
-- **System metrics**: CPU, memory, disk usage
-- **Image storage**: GridFS storage statistics
-
-## 🔧 Troubleshooting
-
-### Common Issues
-
-1. **TensorFlow Installation Issues**
-   ```bash
-   pip install tensorflow-cpu==2.13.1
-   ```
-
-2. **MongoDB Connection Issues**
-   - Ensure MongoDB is running
-   - Check connection string
-   - Verify network connectivity
-
-3. **Model Loading Issues**
-   - Ensure model file exists in `models/model.h5`
-   - Check file permissions
-   - Verify model compatibility
-
-4. **Image Processing Issues**
-   - Supported formats: PNG, JPG, JPEG
-   - Check image file corruption
-   - Verify file size limits
-
-### Debug Mode
-```bash
-uvicorn app:app --host 0.0.0.0 --port 8000 --reload --log-level debug
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
+1. Upload images to MongoDB collections (one collection per class)
+2. Update collection names in `train_model.py`
+3. Run training script
+4. Update class names in configuration
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+[Add your license here]
+
+## 👥 Contributing
+
+[Add contributing guidelines here]
+
+## 📧 Contact
+
+[Add your contact information here]
 
 ## 🙏 Acknowledgments
 
 - TensorFlow/Keras for deep learning framework
-- FastAPI for the high-performance web framework
+- FastAPI for the web framework
 - MongoDB for database storage
-- Render.com for deployment platform
-
-## 📞 Support
-
-For issues and questions:
-- Create an issue on GitHub
-- Check the troubleshooting section
-- Review the API documentation at `/docs`
-
----
-
-**Built with ❤️ using TensorFlow, FastAPI, and MongoDB**
+- React for frontend framework
