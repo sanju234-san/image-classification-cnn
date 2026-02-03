@@ -1,0 +1,30 @@
+{
+    "name": "ai-story-scene-generator",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Fullstack AI Story Scene Generator using MERN + FastAPI",
+    "scripts": {
+        "frontend": "cd frontend && npm run dev",
+        "ai": "cd backend && uvicorn app:app --reload",
+        "dev": "concurrently \"npm:frontend\" \"npm:ai\""
+    },
+    "devDependencies": {
+        "concurrently": "^9.0.0",
+        "nodemon": "^3.1.0"
+    },
+    "engines": {
+        "node": ">=18.0.0",
+        "npm": ">=9.0.0"
+    },
+    "keywords": [
+        "AI",
+        "FastAPI",
+        "MERN",
+        "Story",
+        "Generator",
+        "Vite",
+        "MongoDB"
+    ],
+    "author": "Nimit Gupta",
+    "license": "MIT"
+}
